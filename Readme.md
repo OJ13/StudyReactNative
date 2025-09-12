@@ -215,5 +215,50 @@ const MeuComponente = () => {
 ```
 
 ---
+## 8) Como usar o AsyncStorage
+
+O `AsyncStorage` é uma solução de armazenamento local simples e não criptografada para React Native. Ele permite salvar dados de forma persistente no dispositivo, funcionando como um "localStorage" para apps mobile.
+
+### Para que serve?
+- Armazenar preferências do usuário, tokens de autenticação, configurações, ou qualquer dado simples que precise ser mantido entre sessões do app.
+
+### Benefícios
+- Persistência de dados mesmo após fechar o app.
+- API simples e fácil de usar.
+- Útil para dados pequenos e não sensíveis.
+
+### Instalando o pacote
+
+```sh
+npm install @react-native-async-storage/async-storage
+```
+
+### Exemplo de uso
+
+```jsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Salvando um valor
+const salvarDado = async () => {
+    try {
+        await AsyncStorage.setItem('chave', 'valor');
+    } catch (e) {
+        // erro ao salvar
+    }
+};
+
+// Lendo um valor
+const lerDado = async () => {
+    try {
+        const valor = await AsyncStorage.getItem('chave');
+        if (valor !== null) {
+            // valor recuperado com sucesso
+        }
+    } catch (e) {
+        // erro ao ler
+    }
+};
+```
+
 
 Consulte sempre a documentação oficial para mais detalhes e atualizações.
