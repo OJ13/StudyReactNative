@@ -1,0 +1,7 @@
+# Variables
+@baseUrl = https://sujeitoprogramador.com/r-api/?api=filmes
+
+# Get Filmes
+# @name HealtCheck
+GET {{baseUrl}}
+Accept: application/json
