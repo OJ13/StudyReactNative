@@ -110,6 +110,84 @@ const MeuComponente = () => {
 };
 ```
 
+### useMemo
+
+O `useMemo` é um hook que memoriza valores calculados, evitando recomputações desnecessárias quando as dependências não mudam.
+
+- **Para que serve:**  
+    Otimizar o desempenho de componentes, evitando cálculos pesados em cada renderização.
+
+- **Como usar:**  
+    ```jsx
+    const valorMemorizado = useMemo(() => funcaoPesada(param), [param]);
+    ```
+
+- **Benefícios:**  
+    - Reduz cálculos desnecessários.
+    - Melhora a performance em listas ou componentes complexos.
+
+- **Exemplo de código:**
+    ```jsx
+    import React, { useState, useMemo } from 'react';
+    import { View, Text, Button } from 'react-native';
+
+    const MeuComponente = () => {
+      const [contador, setContador] = useState(0);
+
+      const valorDobrado = useMemo(() => {
+        return contador * 2;
+      }, [contador]);
+
+      return (
+        <View>
+          <Text>Contador: {contador}</Text>
+          <Text>Dobro: {valorDobrado}</Text>
+          <Button title="Incrementar" onPress={() => setContador(contador + 1)} />
+        </View>
+      );
+    };
+    ```
+
+---
+
+### useRef
+
+O `useRef` é um hook que permite criar uma referência mutável que persiste durante todo o ciclo de vida do componente.
+
+- **Para que serve:**  
+    Armazenar valores que não causam re-renderização ao serem alterados, como acessar elementos da interface ou guardar valores entre renders.
+
+- **Como usar:**  
+    ```jsx
+    const minhaRef = useRef(valorInicial);
+    ```
+
+- **Benefícios:**  
+    - Não dispara re-render ao alterar o valor.
+    - Útil para acessar elementos DOM ou guardar valores temporários.
+
+- **Exemplo de código:**
+    ```jsx
+    import React, { useRef } from 'react';
+    import { View, Button, Text } from 'react-native';
+
+    const MeuComponente = () => {
+      const contador = useRef(0);
+
+      const incrementar = () => {
+        contador.current += 1;
+        alert(`Valor atual: ${contador.current}`);
+      };
+
+      return (
+        <View>
+          <Button title="Incrementar (useRef)" onPress={incrementar} />
+          <Text>Veja o valor no alerta</Text>
+        </View>
+      );
+    };
+    ```
+
 ---
 
 ## 4) Como usar o componente ScrollView
