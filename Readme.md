@@ -506,6 +506,7 @@ const MeuComponente = () => (
 ## 12) Como usar ícones com react-native-vector-icons
 
 A biblioteca `react-native-vector-icons` oferece centenas de ícones personalizáveis para React Native.
+Lembrando que com Expo não é necessário instalação, já vem por default
 
 ### Instalação
 
