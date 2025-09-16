@@ -467,5 +467,70 @@ const MeuComponente = () => {
 - [Animated API - React Native](https://reactnative.dev/docs/animated)
 
 ---
+## 11) Como usar animações com react-native-animatable
+
+A biblioteca `react-native-animatable` facilita a criação de animações em componentes React Native de forma simples e declarativa.
+
+### Instalação
+
+```sh
+npm install react-native-animatable
+```
+
+### Exemplo de uso
+
+```jsx
+import React from 'react';
+import { View, TextInput } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+
+const MeuComponente = () => (
+  <View>
+    <Animatable.Text animation="bounceIn" style={{ fontSize: 24 }}>
+      Texto animado!
+    </Animatable.Text>
+    <Animatable.TextInput
+      animation="fadeIn"
+      placeholder="Digite algo"
+      style={{ borderWidth: 1, marginTop: 20, padding: 8 }}
+    />
+  </View>
+);
+```
+
+- [Documentação oficial](https://github.com/oblador/react-native-animatable)
+- [GitHub](https://github.com/oblador/react-native-animatable)
+
+---
+
+## 12) Como usar ícones com react-native-vector-icons
+
+A biblioteca `react-native-vector-icons` oferece centenas de ícones personalizáveis para React Native.
+
+### Instalação
+
+```sh
+npm install react-native-vector-icons
+```
+
+### Exemplo de uso
+
+```jsx
+import React from 'react';
+import { View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+const MeuComponente = () => (
+  <View>
+    <Icon name="rocket" size={30} color="#900" />
+  </View>
+);
+```
+
+- [Documentação oficial](https://github.com/oblador/react-native-vector-icons)
+- [GitHub](https://github.com/oblador/react-native-vector-icons)
+
+---
+
 
 Consulte sempre a documentação oficial para mais detalhes e atualizações.
