@@ -369,6 +369,102 @@ const MeuComponente = () => {
   );
 };
 ```
+## 10) Como usar o Animated (timing, parallel, sequence)
+
+O `Animated` é uma API poderosa do React Native para criar animações fluidas e interativas. Ele permite animar valores, estilos e componentes de forma declarativa.
+
+### Principais métodos de animação
+
+- **Animated.timing:**  
+  Anima um valor de forma gradual, usando tempo e easing. Ideal para transições suaves, como mover, alterar opacidade ou escala.
+
+- **Animated.parallel:**  
+  Executa múltiplas animações ao mesmo tempo. Útil para animar vários valores simultaneamente, como mover e mudar opacidade juntos.
+
+- **Animated.sequence:**  
+  Executa animações em sequência, uma após a outra. Perfeito para criar efeitos encadeados, como aparecer, mover e desaparecer.
+
+### Quando usar cada um?
+
+- Use `timing` para animar um valor específico com duração definida.
+- Use `parallel` quando quiser que várias animações ocorram juntas.
+- Use `sequence` para criar passos animados, onde uma animação começa após a anterior terminar.
+
+### Exemplo de código
+
+```jsx
+import React, { useRef } from 'react';
+import { View, Button, Animated } from 'react-native';
+
+const MeuComponente = () => {
+  const animacao = useRef(new Animated.Value(0)).current;
+
+  const animarTiming = () => {
+    Animated.timing(animacao, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start(() => animacao.setValue(0));
+  };
+
+  const animarParallel = () => {
+    const opacidade = new Animated.Value(0);
+    const escala = new Animated.Value(0.5);
+    Animated.parallel([
+      Animated.timing(opacidade, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(escala, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const animarSequence = () => {
+    Animated.sequence([
+      Animated.timing(animacao, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animacao, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  return (
+    <View>
+      <Button title="Timing" onPress={animarTiming} />
+      <Button title="Parallel" onPress={animarParallel} />
+      <Button title="Sequence" onPress={animarSequence} />
+      <Animated.View
+        style={{
+          opacity: animacao,
+          transform: [{ translateY: animacao.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 100],
+          }) }],
+          width: 100,
+          height: 100,
+          backgroundColor: 'blue',
+          marginTop: 20,
+        }}
+      />
+    </View>
+  );
+};
+```
+
+### Documentação oficial
+
+- [Animated API - React Native](https://reactnative.dev/docs/animated)
 
 ---
 
