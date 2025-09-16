@@ -337,6 +337,39 @@ const lerDado = async () => {
     }
 };
 ```
+---
 
+## 9) Como usar o componente ActivityIndicator
+
+O `ActivityIndicator` exibe um indicador de carregamento (spinner), útil para mostrar ao usuário que uma operação está em andamento.
+
+### Exemplo de uso
+
+```jsx
+import React, { useState } from 'react';
+import { View, Button, ActivityIndicator, Text } from 'react-native';
+
+const MeuComponente = () => {
+  const [carregando, setCarregando] = useState(false);
+
+  const iniciarCarregamento = () => {
+    setCarregando(true);
+    setTimeout(() => setCarregando(false), 2000); // Simula carregamento
+  };
+
+  return (
+    <View>
+      <Button title="Carregar" onPress={iniciarCarregamento} />
+      {carregando ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Text>Pronto!</Text>
+      )}
+    </View>
+  );
+};
+```
+
+---
 
 Consulte sempre a documentação oficial para mais detalhes e atualizações.
