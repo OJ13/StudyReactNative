@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/pages/Home';
 import SobreScreen from './src/pages/Sobre';
+import ContatoScreen from './src/pages/Contato';
 
 // function HomeScreen() {
 //   return (
@@ -37,13 +38,8 @@ function RootStack() {
           headerShown: false
         }}
         />
-      <Stack.Screen 
-      name="Sobre" 
-      component={SobreScreen} 
-      options={{
-          title: 'Tela Sobre'
-        }}
-      />
+      <Stack.Screen name="Sobre" component={SobreScreen} options={{ title: 'Tela Sobre' }} />
+      <Stack.Screen name="Contato" component={ContatoScreen} />
     </Stack.Navigator>
   );
 }
