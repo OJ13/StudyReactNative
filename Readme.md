@@ -24,6 +24,8 @@ npm install -g react-native-cli
 ### Criando um novo projeto Expo
 ```sh
 expo init nome-do-projeto
+
+npx create-expo-app {nome-do-projeto} --template {exemplo: blank}
 ```
 Você poderá escolher entre templates como:
 - blank (JavaScript)
