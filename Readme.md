@@ -534,6 +534,244 @@ const MeuComponente = () => (
 - [GitHub](https://github.com/oblador/react-native-vector-icons)
 
 ---
+## 13) Tipos de Navegação no React Native (Stack, Tabs, Drawer)
 
+A navegação é fundamental para apps com múltiplas telas. O React Navigation é a biblioteca mais usada.
 
-Consulte sempre a documentação oficial para mais detalhes e atualizações.
+### Instalação das bibliotecas de navegação
+
+```sh
+npm install @react-navigation/native
+npm install @react-navigation/native-stack
+npm install @react-navigation/bottom-tabs
+npm install @react-navigation/drawer
+npm install react-native-screens react-native-safe-area-context
+```
+
+Se estiver usando Expo, basta instalar normalmente.
+
+---
+
+### Navegação Stack
+
+Empilha telas, como páginas de um navegador.
+
+```jsx
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './HomeScreen';
+import DetailsScreen from './DetailsScreen';
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+---
+
+### Navegação Tabs
+
+Alterna entre telas usando uma barra de abas.
+
+```jsx
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './HomeScreen';
+import SettingsScreen from './SettingsScreen';
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+---
+
+### Navegação Drawer
+
+Exibe um menu lateral para acessar telas.
+
+```jsx
+import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import HomeScreen from './HomeScreen';
+import ProfileScreen from './ProfileScreen';
+
+const Drawer = createDrawerNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Drawer.Navigator>
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Profile" component={ProfileScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+---
+
+### Navegação combinando Stack e Tabs
+
+Misture tipos de navegação, por exemplo, Stack principal com abas internas.
+
+```jsx
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './HomeScreen';
+import DetailsScreen from './DetailsScreen';
+import SettingsScreen from './SettingsScreen';
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function Tabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+- [Documentação oficial do React Navigation](https://reactnavigation.org/)
+
+---
+
+## 14) Como usar Firebase no React Native (CRUD com Firestore)
+
+O Firebase oferece backend completo para autenticação, banco de dados, storage e mais. O Firestore é o banco de dados NoSQL em tempo real do Firebase.
+
+### Instalação do Firebase
+
+```sh
+npm install firebase
+```
+
+---
+
+### Configurando o Firebase
+
+Crie um projeto no [console do Firebase](https://console.firebase.google.com/), adicione um app e copie as credenciais.
+
+```js
+// firebaseConfig.js
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: 'SUA_API_KEY',
+  authDomain: 'SEU_AUTH_DOMAIN',
+  projectId: 'SEU_PROJECT_ID',
+  storageBucket: 'SEU_STORAGE_BUCKET',
+  messagingSenderId: 'SEU_MESSAGING_SENDER_ID',
+  appId: 'SEU_APP_ID',
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+```
+
+---
+
+### Exemplo CRUD com Firestore usando onSnapshot
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, TextInput, FlatList } from 'react-native';
+import { db } from './firebaseConfig';
+import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+
+export default function CrudFirestore() {
+  const [nome, setNome] = useState('');
+  const [usuarios, setUsuarios] = useState([]);
+
+  // Ler dados em tempo real
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'usuarios'), (snapshot) => {
+      const lista = [];
+      snapshot.forEach((doc) => {
+        lista.push({ id: doc.id, ...doc.data() });
+      });
+      setUsuarios(lista);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Criar usuário
+  const adicionarUsuario = async () => {
+    if (nome.trim() === '') return;
+    await addDoc(collection(db, 'usuarios'), { nome });
+    setNome('');
+  };
+
+  // Atualizar usuário
+  const atualizarUsuario = async (id) => {
+    await updateDoc(doc(db, 'usuarios', id), { nome: nome + ' (editado)' });
+  };
+
+  // Deletar usuário
+  const deletarUsuario = async (id) => {
+    await deleteDoc(doc(db, 'usuarios', id));
+  };
+
+  return (
+    <View>
+      <TextInput
+        placeholder="Nome"
+        value={nome}
+        onChangeText={setNome}
+        style={{ borderWidth: 1, margin: 8, padding: 8 }}
+      />
+      <Button title="Adicionar" onPress={adicionarUsuario} />
+      <FlatList
+        data={usuarios}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={{ flexDirection: 'row', alignItems: 'center', margin: 8 }}>
+            <Text style={{ flex: 1 }}>{item.nome}</Text>
+            <Button title="Editar" onPress={() => atualizarUsuario(item.id)} />
+            <Button title="Excluir" onPress={() => deletarUsuario(item.id)} />
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+```
+
+- [Documentação oficial do Firebase](https://firebase.google.com/docs)
+- [Documentação Firestore](https://firebase.google.com/docs/firestore)
+
