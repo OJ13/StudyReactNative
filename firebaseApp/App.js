@@ -1,277 +1,138 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ScrollView, Keyboard } from 'react-native';
-import { db } from './src/firebaseConnection';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Keyboard } from 'react-native';
+import { auth } from './src/firebaseConnection';
 import { useEffect, useState } from 'react';
-import { doc, getDoc, onSnapshot, setDoc, collection, addDoc, getDocs, deleteDoc, updateDoc } from "firebase/firestore"
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import FormUsers from './src/usuario';
 
 export default function App() {
-  const [nome, setNome] = useState("")
-  const [idade, setIdade] = useState(0);
-  const [cargo, setCargo] = useState("");
-  const [showForm, setShowForm] = useState(true);
-  const [usuarios, setUsuarios] = useState([]);
-  const [isEditing, setIsEditing] = useState("");
-
-  useEffect(() => {
-    //loadDados();
-    //openLoadDados();
-    loadAllOpen();
-  }, []);
-
-  //Abre e fecha a conexão
-  async function loadDados() {
-    const docRef = doc(db, "users", "1");
-
-    getDoc(docRef)
-      .then((snapshot) => {
-        setNome(snapshot.data()?.nome)
-        setIdade(snapshot.data()?.idade)
-        setCargo(snapshot.data()?.cargo)
-      })
-      .catch((err) => {
-        console.log("ERRO >> ", err);
-      })
-  }
-
-  //Abre e fica aberta e toda altera;áo reflete
-  async function openLoadDados() {
-    const docRef = doc(db, "users", "1");
-
-    onSnapshot(docRef, (doc) => {
-        setNome(doc.data()?.nome)
-        setIdade(doc.data()?.idade)
-        setCargo(doc.data()?.cargo)
-    })
-  }
-
-  async function loadAll() {
-    const usersRef = collection(db, "users")
-
-    getDocs(usersRef)
-      .then((snapshot) => {
-        let lista = [];
-
-        snapshot.forEach((doc) => {
-          lista.push({
-            id: doc.id,
-            nome: doc.data()?.nome,
-            idade: doc.data()?.idade,
-            cargo: doc.data()?.cargo,
-          })
-        });
-
-        setUsuarios(lista);
-
-      }).catch((err) => {
-        console.log('ERRO: ', err)
-      });
-  }
-
-  async function loadAllOpen() {
-    const usersRef = collection(db, "users")
-
-    onSnapshot(usersRef ,
-      (snapshot) => {
-        let lista = [];
-
-        snapshot.forEach((doc) => {
-          lista.push({
-            id: doc.id,
-            nome: doc.data()?.nome,
-            idade: doc.data()?.idade,
-            cargo: doc.data()?.cargo,
-          })
-        });
-
-        setUsuarios(lista);
-
-      });
-  }
-
-  async function handleRegister() {
-    const docRef = doc(db, "users", "4");
-    await setDoc(docRef, {
-      nome: 'Jose teste',
-      idade: 45,
-      cargo: 'Teach Lead'
-    }).then(() => {
-      alert('Cadastrado com Sucesso!')
-    }).catch((err) => {
-      console.log('ERRO: ', err)
-    })
-  }
-
-  async function handleSave() {
-   await addDoc(collection(db, "users"), {
-     nome: 'Enzo',
-      idade: 17,
-      cargo: 'Estagiario'
-    })
-    .then(() => {
-      alert('Cadastrado com Sucesso!')
-    }).catch((err) => {
-      console.log('ERRO: ', err)
-    })
-  }
-
-  async function salvar() {
-   const objetoSalvo = {
-    nome: nome,
-    idade: idade,
-    cargo: cargo
-   }
-
-   await addDoc(collection(db, "users"), objetoSalvo)
-    .then(() => {
-      alert('Cadastrado com Sucesso!')
-      clean();
-    }).catch((err) => {
-      console.log('ERRO: ', err)
-    })
-  }
-
-  function handleToggle() {
-    setShowForm(!showForm)
-  }
-
-  function editarUsuario(data) {
-    setNome(data.nome);
-    setIdade(data.idade.toString());
-    setCargo(data.cargo);
-    setIsEditing(data.id);
-  }
-
-  async function handleEditarUsuario() {
-     const docRef = doc(db, "users", isEditing);
-
-    await updateDoc(docRef, {
-      nome: nome,
-      idade: idade,
-      cargo: cargo,
-      ativo: true
-    }).then(() => {
-      alert('Usuário alterado com Sucesso');
-      clean();
-    })
-      
-  }
-
-  function clean() {
-    setNome("")
-    setIdade(0)
-    setCargo("")
-    setIsEditing("");
-    Keyboard.dismiss();
-  }
-
+  const [showFormAuth, setShowFormAuth] = useState(true);
+  
   return (
     <View style={styles.container}>
-      {showForm && (
-        <View>
-        <Text style={styles.label}>Nome:</Text>
-          <TextInput 
-            style={styles.input}
-            value={nome}
-            placeholder='Digite um nome ...'
-            onChangeText={(text) => setNome(text)}
-          />
-          <Text style={styles.label}>Idade:</Text>
-          <TextInput 
-            style={styles.input}
-            value={idade}
-            placeholder='Digite sua Idade'
-            onChangeText={(text) => setIdade(text)}
-            keyboardType='numeric'
-          />
-          <Text style={styles.label}>Cargo: </Text>
-          <TextInput 
-            style={styles.input}
-            value={cargo}
-            placeholder='Digite o seu cargo'
-            onChangeText={(text) => setCargo(text)}
-          />
-
-          
-          {/* <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Adicionar</Text>
-          </TouchableOpacity> */}
-
-          <View style={{ display: 'flex', flexDirection: 'row', margin: 10}}>
-            <TouchableOpacity style={styles.buttonClean} onPress={clean}>
-                <Text style={styles.buttonTextClean}>Limpar</Text>
-            </TouchableOpacity>
-
-          {isEditing !== "" ? (
-              <TouchableOpacity style={styles.buttonEdit} onPress={handleEditarUsuario}>
-                <Text style={styles.buttonText}>Editar</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.button} onPress={salvar}>
-                <Text style={styles.buttonText}>Adicionar</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-        </View>
+      {showFormAuth && (
+        <UsuarioFirebaseAuth />
       )}
 
-      <TouchableOpacity style={styles.btnShow} onPress={handleToggle}>
-         <Text style={styles.buttonText}>
-          {showForm ? 'Esconder ' : 'Mostrar '} Formulário
-         </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.label}>Usuários</Text>
-
-      <FlatList style={styles.list}
-        data={usuarios}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({item}) => <Usuarios data={item} handleEditUser={(item) => editarUsuario(item)} />}
-      />
-      
       <StatusBar style="auto" />
     </View>
   );
 }
 
-function Usuarios({data, handleEditUser}) {
-  
-  async function deletar() {  
-    const docRef = doc(db, "users", data.id);
+function UsuarioFirebaseAuth() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [authUser, setAuthUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    await deleteDoc(docRef)
-      .then(() => {
-        alert('Item deletado com Sucesso!')
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+         setAuthUser({ email: user.email, uid: user.uid })
+
+         setLoading(false);
+        return;
+      }
+
+      setAuthUser(null);
+      setLoading(false);
+    })
+  }, []);
+
+  async function handleCreateUser() {
+    const user = await createUserWithEmailAndPassword(auth, email, senha);
+    alert("Usuário criado com Sucesso")
+    clean();
+  }
+
+  function handleLogin() {
+    signInWithEmailAndPassword(auth, email, senha)
+      .then((user) => {
+        setAuthUser(
+          {
+            email: user.email,
+            uid: user.uid
+          }
+        )
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(err?.code)
       })
   }
 
-  async function editar() {  
-    handleEditUser(data);
+  function logout() {
+    signOut(auth)
+      .then((x) => {
+        setAuthUser(null);        
+      })
   }
 
-  return (
-    <ScrollView>
-      <View style={styles.grid}>
-        <Text style={styles.grid.column}>{data.nome}</Text>
-        <Text style={styles.grid.column}>{data.idade}</Text>
-        <Text style={styles.grid.column}>{data.cargo}</Text>
-        <TouchableOpacity onPress={editar}>
-          <Ionicons name="pencil" color={'#0000FFaa'} size={30} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={deletar}>
-          <Ionicons name="close" color={'#FF0000'} size={30} />
-        </TouchableOpacity>
+  function clean() {
+    Keyboard.dismiss();
+    setEmail("");
+    setSenha("");
+  } 
+
+  if (authUser) {
+    return (
+      <View style={styles.container}>
+        <FormUsers />
       </View>
-    </ScrollView>
+    )
+  } 
+  else 
+  {
+  return (
+    <View style={{ marginTop: 10}}>
+
+      { loading && <Text style={{ fontSize: 20, marginLeft: 8, color: '#000'}}> Carregando as informações...</Text>}
+
+      {/* <Text style={{ margin: 8, fontSize: 16, fontWeight: 'bold'}}>Usuário logado: {authUser && authUser.email}</Text> */}
+      <Text style={styles.label}>Email:</Text>
+        <TextInput 
+          style={styles.input}
+          value={email}
+          placeholder='Digite seu email'
+          onChangeText={(text) => setEmail(text)}
+        />
+        <Text style={styles.label}>Senha: </Text>
+        <TextInput
+          style={styles.input}
+          value={senha}
+          placeholder='Digite sua senha'
+          onChangeText={(text) => setSenha(text)}
+          secureTextEntry={true}
+        />
+
+        <View style={{ display: 'flex', flexDirection: 'row', margin: 10}}>
+          <TouchableOpacity style={styles.button} onPress={handleCreateUser}>
+            <Text style={styles.buttonText}>Criar Conta</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#834829'}]} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Fazer Login</Text>
+          </TouchableOpacity>
+        </View>
+
+        {
+          authUser && 
+          (
+            <TouchableOpacity style={[styles.button, { backgroundColor: '#FFF', borderWidth: 1, width: '95%'}]} onPress={logout}>
+              <Text style={[styles.buttonText , { color: '#000' }]}>Sair da Conta</Text>
+            </TouchableOpacity>
+          )
+        }
+
+      </View>
   )
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: 100,
+    marginTop: 30,
   },
   label: {
     fontSize: 18,
