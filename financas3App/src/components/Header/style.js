@@ -13,7 +13,7 @@ export const Container = styled.SafeAreaView`
 
 export const Title = styled.Text`
     font-size: 22px;
-    margin-left: 8px;
+    margin-left: 12px;
 `;
 
 export const ButtonMenu = styled.TouchableOpacity`

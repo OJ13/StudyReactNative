@@ -1,11 +1,13 @@
 import { Container, Title, ButtonMenu } from "./style";
-import { FontAwesome6  } from "@react-native-vector-icons/fontawesome6";
+import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Header({ title }) {
+    const navigation = useNavigation();
     return (
         <Container>
-            <ButtonMenu>
-                <FontAwesome6 name="bars" size={35} color="#121212"/>
+            <ButtonMenu onPress={() => navigation.openDrawer() }>
+                <FontAwesome6 name="bars" iconStyle="solid" size={25} color="#121212"/>
             </ButtonMenu>
             {
                 title && (

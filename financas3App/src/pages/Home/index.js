@@ -1,14 +1,102 @@
-import { View, Text, Button } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { AuthContext } from '../../contexts/auth';
-import { useContext } from 'react';
-import { Background } from './style';
+import { useContext, useEffect, useState } from 'react';
+import { 
+    Background, 
+    ListBalance,
+    Area,
+    Title,
+    List
+} from './style';
 import Header from '../../components/Header';
+import BalanceItem from '../../components/BalanceItem';
+import api from '../../services/api';
+import { format } from "date-fns";
+import { useIsFocused } from '@react-navigation/native';
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
+import HistoricoList from '../../components/HistoricoList';
 
 export default function Home() {
+    const isFocused = useIsFocused();
     const { signOut, user } = useContext(AuthContext);
+    const [ listBalance, setListBalance] = useState([]);
+    const [ dateMovements, setDateMovements] = useState(new Date());
+    const [ movements, setMovements] = useState([]);
+
+    useEffect(() => {
+        let isActive = true;
+
+        async function getMovements() {
+            let dateFormated = format(dateMovements, 'dd/MM/yyyy');
+
+            const receives = await api.get('/receives', {
+                params: {
+                    date: dateFormated
+                }
+            });
+
+            const balance = await api.get('/balance', {
+                params: {
+                    date: dateFormated
+                }
+            });
+
+            if (isActive) {
+                setMovements(receives.data);
+                setListBalance(balance.data);
+            }
+        }
+        getMovements();
+
+        return () => isActive = false; //ComponentUnmounted
+    }, [isFocused, dateMovements]);
+
+    async function handleDelete(id) {
+        try {
+            await api.delete('/receives/delete', {
+                params: {
+                    item_id: id
+                }
+            });
+            setDateMovements(new Date());
+            alert('Item deletado com Sucesso!');
+
+        } catch(err) {
+            console.error(err.message);
+            alert('Erro ao excluir o Item');
+        }
+    }
+
     return (
         <Background>
             <Header title="Novo Teste" />
+
+            <ListBalance 
+                data={listBalance} 
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => item.tag}
+                renderItem={ ({item}) => ( 
+                    <BalanceItem data={item} />
+                ) }
+                />
+
+            <Area>
+                <TouchableOpacity>
+                    <FontAwesome6 name="calendar" iconStyle="regular" color="#121212" size={30} />
+                </TouchableOpacity>
+                <Title>Ultimas movimentações</Title>
+            </Area>
+
+            <List 
+                data={movements}
+                keyExtractor={ item => item.id }
+                renderItem={({ item }) => <HistoricoList data={item} deleteItem={handleDelete} /> }
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 20 }}
+            />
+
+
         </Background>
     )
 }
