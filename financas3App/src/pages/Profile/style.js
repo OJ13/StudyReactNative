@@ -1,36 +1,54 @@
 import styled from 'styled-components/native';
 
-export const Container = styled.View`
-    background-color: #e9ebf1ff;
-    border-radius: 4px;
-    margin-left: 10px;
-    margin-rigth: 12px;
-    margin-bottom: 14px;
-    padding: 12px;
+export const Container = styled.SafeAreaView`
+   flex: 1;
+   background-color: #F0F4FF;
+   align-items: center;
+   margin-top: 14px;
 `;
 
-export const Tipo = styled.View`
-    flex-direction: row;
+export const Message = styled.Text`
+   font-size: 18px;
+   font-weight: bold;
+   margin-top: 14px;
 `;
 
-export const IconView = styled.View`
-    flex-direction: row;
-    background-color: ${props => props.bg};
-    border: 1px solid;
-    border-radius: 10px;
-    padding: 5px;
+export const Name = styled.Text`
+   font-size: 24px;
+   font-weight: bold;
+   margin-bottom: 24px;
+   margin-top: 10px;
+   padding: 0 14px;
+   color: #121212;
 `;
 
-export const TipoText = styled.Text`
-    color: #FFF;
-    font-size: 16px;
-    font-style: italic;
-    font-weight: bold;
-    margin-left: 10px;
+export const NewLink = styled.TouchableOpacity`
+   background-color: #3b3dbf;
+   width: 90%;
+   height: 45px;
+   border-radius: 8px;
+   align-items: center;
+   justify-content: center;
+   margin-bottom: 14px;
 `;
 
-export const ValorText = styled.Text`
-    color: #121212;
-    font-size: 22px;
-    margin-top: 5px;
+export const NewText = styled.Text`
+   font-size: 18px;
+   font-weight: bold;
+   color: #FFF;
+`;
+
+export const LogoutButton = styled.TouchableOpacity`
+   justify-content: center;
+   align-items: center;
+   width: 90%;
+   height: 45px;
+   border-width: 1px;
+   border-radius: 8px;
+`;
+
+export const LogoutText = styled.Text`
+   font-size: 18px;
+   font-weight: bold;
+   color: #ff0000ff;
 `;
