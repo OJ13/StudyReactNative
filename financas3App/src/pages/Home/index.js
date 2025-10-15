@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Modal } from 'react-native';
 import { AuthContext } from '../../contexts/auth';
 import { useContext, useEffect, useState } from 'react';
 import { 
@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { useIsFocused } from '@react-navigation/native';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import HistoricoList from '../../components/HistoricoList';
+import CaldendarModal from '../../components/CalendarModal';
 
 export default function Home() {
     const isFocused = useIsFocused();
@@ -22,6 +23,7 @@ export default function Home() {
     const [ listBalance, setListBalance] = useState([]);
     const [ dateMovements, setDateMovements] = useState(new Date());
     const [ movements, setMovements] = useState([]);
+    const [ modalVisible, setModalVisible ] = useState(false);
 
     useEffect(() => {
         let isActive = true;
@@ -67,6 +69,10 @@ export default function Home() {
         }
     }
 
+    async function filterDate(dateSelected) {
+        setDateMovements(dateSelected);
+    }
+
     return (
         <Background>
             <Header title="Novo Teste" />
@@ -82,7 +88,7 @@ export default function Home() {
                 />
 
             <Area>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <FontAwesome6 name="calendar" iconStyle="regular" color="#121212" size={30} />
                 </TouchableOpacity>
                 <Title>Ultimas movimentações</Title>
@@ -96,6 +102,11 @@ export default function Home() {
                 contentContainerStyle={{ paddingBottom: 20 }}
             />
 
+          
+            <Modal visible={modalVisible} animationType='fade' transparent={true}>
+                <CaldendarModal setVisible={ () => setModalVisible(false) } handleFilter={filterDate} />
+            </Modal>
+          
 
         </Background>
     )
