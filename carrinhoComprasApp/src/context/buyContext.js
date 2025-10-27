@@ -5,6 +5,13 @@ export const BuyContext = createContext();
 export default function BuyProvider({children}) {
     const [compra, setCompra]= useState([]);
     const [qtdProdutosSelecionado, setQtdProdutosSelecionado] = useState(0);
+    const [total, setTotal] = useState(0);
+
+    function somaTotal(items) {
+        let carrinho = items;
+        let resuladoAcumulado = carrinho.reduce((p, obj) => { return p + obj.total }, 0);
+        setTotal(resuladoAcumulado);
+    }
 
     function addProduto(produto) {
         const indexCompra = compra.findIndex(p => p.id === produto.id);
@@ -14,6 +21,7 @@ export default function BuyProvider({children}) {
             adicionandoItem[indexCompra].total = adicionandoItem[indexCompra].price * adicionandoItem[indexCompra].qtd;
 
             setCompra(adicionandoItem);
+            somaTotal(adicionandoItem);
             return;
         }
 
@@ -23,6 +31,7 @@ export default function BuyProvider({children}) {
             total: produto.price
         }
         setCompra(p => [ ...p, item ])
+        somaTotal([...compra, item]);
     }
 
     function removeProduto(produto) {
@@ -32,21 +41,23 @@ export default function BuyProvider({children}) {
             adicionandoItem[indexCompra].qtd = adicionandoItem[indexCompra].qtd - 1;
 
             if (adicionandoItem[indexCompra].qtd === 0) {
-                adicionandoItem.pop(adicionandoItem[indexCompra])
+                const listaFiltrada = compra.filter(item => item.id !== produto.id);
 
-                setCompra(adicionandoItem);
+                setCompra(listaFiltrada);
+                somaTotal(listaFiltrada);
                 return;
             }
             
             adicionandoItem[indexCompra].total = adicionandoItem[indexCompra].price * adicionandoItem[indexCompra].qtd;
             setCompra(adicionandoItem);
+            somaTotal(adicionandoItem);
             return;
         }
     }
 
     return (
         <BuyContext.Provider
-            value={{ compra, addProduto, removeProduto }}
+            value={{ compra, total, addProduto, removeProduto }}
         >
             {children}
         </BuyContext.Provider>

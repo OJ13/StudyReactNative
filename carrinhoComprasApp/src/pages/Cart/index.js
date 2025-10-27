@@ -1,10 +1,11 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { BuyContext } from '../../context/buyContext';
+import { FontAwesome6 } from "@expo/vector-icons";
 
 export default function Cart() {
-  const { compra, addProduto } = useContext(BuyContext);
-
+  const { compra, total } = useContext(BuyContext);
+  
   return (
       <View style={styles.container}>
        
@@ -12,16 +13,30 @@ export default function Cart() {
           data={compra}      
           renderItem={({ item }) => <ItemProduto data={item} />}
           keyExtractor={(item) => item.id}
+          ListEmptyComponent={() => <Text>Nenhum item no carrinho</Text> }
           showsHorizontalScrollIndicator={false}
           scrollEnabled={true}
+          ListFooterComponent={() => <Text style={styles.total}>Valor total: {total.toFixed(2)} R$</Text> }
         />
   
       </View>
     );
 }
 
-export function ItemProduto({data}) {
+export function ItemProduto({ data }) {
+  const [ quantidade, setQuantidade ] = useState(data?.qtd);
   const { addProduto, removeProduto } = useContext(BuyContext);
+  
+  function aumentar() {
+    setQuantidade(item => item + 1);
+    addProduto(data);
+  }
+
+  function diminuir() {
+    setQuantidade(item => item - 1);
+    removeProduto(data);
+  }
+
   return (
     <View style={styles.item}>
       <View style={styles.info}>
@@ -31,15 +46,19 @@ export function ItemProduto({data}) {
 
 
       <View style={styles.value}>
-        <View>
-          <TouchableOpacity>
-          <Text>+</Text>
+        <View style={styles.btnContainer}>
+          <TouchableOpacity style={styles.btnContador} onPress={diminuir}>
+            <Text style={{marginBottom: 10}}>
+              <FontAwesome6 name="sort-down" size={30} color="#000" />
+            </Text>
           </TouchableOpacity>
         
-            <Text>{data.qtd}</Text>
+            <Text style={styles.infoPreco}> {quantidade} </Text>
         
-          <TouchableOpacity>
-            <Text>-</Text>
+          <TouchableOpacity style={styles.btnConktador} onPress={aumentar}>
+            <Text style={{marginTop: 10}}>
+              <FontAwesome6 name="sort-up" size={30} color="#000" />
+            </Text>
           </TouchableOpacity>
         </View>
         
@@ -74,5 +93,23 @@ const styles = StyleSheet.create({
   infoPreco: {
     fontSize: 14,
     fontWeight: '600'
+  },
+  value: {
+    alignItems: 'center'
+  },  
+  btnContainer: {
+    flexDirection: 'row',
+    width: 80,
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  btnContador: {
+    width: 20,
+    justifyContent: 'center'
+  },
+  total: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 24
   }
 });
